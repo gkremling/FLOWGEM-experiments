@@ -1,6 +1,6 @@
 # FLOWGEM: FLOW-based GEeneration for Missing data
 
-This repository contains the official implementation of the paper:
+This repository contains the official implementation of the experiments in the paper:
 
 **[Generative Modeling under Non-Monotonic MAR Missingness via Approximate Wasserstein Gradient Flows](https://arxiv.org/abs/2604.04567)**
 Gitte Kremling, Jeffrey Näf, Johannes Lederer
