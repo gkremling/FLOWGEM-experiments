@@ -5,14 +5,16 @@ This repository contains the official implementation of the experiments in the p
 **[Generative Modeling under Non-Monotonic MAR Missingness via Approximate Wasserstein Gradient Flows](https://arxiv.org/abs/2604.04567)**
 Gitte Kremling, Jeffrey Näf, Johannes Lederer
 
-*FLOWGEM is a principled and practical method for generating complete datasets from data with values Missing at Random (MAR). It uses a Wasserstein Gradient Flow with an approximated velocity field to minimize the expected KL divergence.*
+FLOWGEM is a principled and practical method for generating complete datasets from data with values Missing at Random (MAR). It uses a Wasserstein Gradient Flow with an approximated velocity field to minimize the expected KL divergence.
 
 
 [comment]: <> (Installation, requirements.txt)
 
 ## Usage
 
-The method is implemented in `flowgem.py` and can be applied to a dataset with missing values as follows:
+**Looking for a ready-to-use implementation of FLOWGEM?** The documented Python package [flowgem](https://pypi.org/project/flowgem/) is available on PyPI (pip install flowgem), with source code on [GitHub](https://github.com/gkremling/FLOWGEM-package.git).
+
+For the experiments in this repository, the method is implemented in `flowgem.py` and can be applied to a dataset with missing values as follows:
 ```python
 from flowgem import sample_flowgem
 Xnew = sample_flowgem(X0, X_obs, M)
@@ -26,9 +28,12 @@ Additional arguments allow tuning the hyperparameters, though we found the defau
 
 ## Empirical results in the paper
 
-The experimental results in the paper can be reproduced via two notebooks:
+The experimental results in the paper can be reproduced via the following notebooks:
 - `main_realdata.ipynb` --- runs and evaluates different imputation/generation methods on real datasets
 - `main_simulations.ipynb` --- runs and evaluates methods for the simulation study described in the paper
+- `eval_regression.ipynb` --- evaluates a regression analysis on the simulation results 
+- `sensitivity_analysis.ipynb` --- runs and evaluates FLOWGEM with various hyperparameters on real datasets
+- `vary_missingness.ipynb` --- runs and evaluates FLOWGEM under different amputation settings on real datasets
 
 The R script `main_realdata.R` prepares the real datasets by amputing them and inserting missing values, while `load_uci_datasets.ipynb` can be used to download the UCI datasets. Both, typically do not need to be re-run.
 

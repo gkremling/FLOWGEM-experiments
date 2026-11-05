@@ -114,7 +114,7 @@ def evaluate_sigma(xpi, xrho, sigma, splits_pi, splits_rho):
     
 #================ Main method ================#
 
-def sample_flowgem(X0, X_obs, M, T=1000, eta=0.01, grad_tol=0.01, min_iter=10, sigma_fix=None, sigma_vals=None, cv_every=10):
+def sample_flowgem(X0, X_obs, M, T=500, eta=0.01, grad_tol=0.02, min_iter=10, sigma_fix=None, sigma_vals=None, cv_every=10, sigma_mul_heur=1.0, eta_adap=True):
     Xt = X0.clone().to(dtype = torch.float64, device = device)
     M = M.clone().to(dtype = torch.float64, device = device)
     X = X_obs.to(dtype = torch.float64, device = device)
@@ -143,12 +143,15 @@ def sample_flowgem(X0, X_obs, M, T=1000, eta=0.01, grad_tol=0.01, min_iter=10, s
         # alternatively use heuristic (doesn't yield very good results)
         # sigma_heur = (.5*comp_pairwise_dist(Xt, Xt).flatten().median()).sqrt().item()
         sigma_heur = sigma_heuristic_pairs(Xt)
-        sigma_current = {m: sigma_heur for m in mask_idx}
+        sigma_current = {m: sigma_mul_heur * sigma_heur for m in mask_idx}
         print("heuristic sigma:", sigma_heur)
     else:
         sigma_current = {m: sigma_fix for m in mask_idx}
     
     mean_grad_prev = torch.inf
+    
+    stopped_early = False
+    eta_halved = []
     
     Xhats = []
     for t in tqdm(range(T), desc="WGF iterations"):
@@ -187,10 +190,12 @@ def sample_flowgem(X0, X_obs, M, T=1000, eta=0.01, grad_tol=0.01, min_iter=10, s
         mean_grad = (torch.mean(torch.norm(grad_sum, dim=1)) / torch.mean(torch.norm(Xt, dim=1))).item()
         if mean_grad < grad_tol and t+1 > min_iter:
             print(f"Stopped early after {t+1} iterations since mean grad {mean_grad:.4f} is below grad_tol={grad_tol}.")
+            stopped_early = True
             break
-        if mean_grad > mean_grad_prev:
+        if eta_adap and mean_grad > mean_grad_prev:
             eta = eta*0.5
+            eta_halved.append(t+1)
             print(f"Step size eta is halved to {eta} since mean grad has increased.")
         mean_grad_prev = mean_grad
 
-    return Xhats
+    return Xhats, stopped_early, t+1, eta_halved, eta
