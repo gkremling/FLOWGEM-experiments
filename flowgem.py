@@ -48,8 +48,8 @@ def opt_wb(xpi, xrho, x, sigma, block_size=1000):
         Xrhokrhox = (krhox @ xrho) / n_rho
 
         # ---------- build c ----------
-        c1 = Xpikpix - Xrhokrhox
-        c2 = kpix_mean - krhox_mean
+        c1 = Xpikpix #- Xrhokrhox
+        c2 = kpix_mean #- krhox_mean
         c = torch.cat([c1, c2], dim=1)
 
         # ---------- build A ----------
@@ -100,7 +100,7 @@ def sigma_heuristic_pairs(X, num_pairs=1000000):
     return (0.5 * dvals.median()).sqrt().item()
 
 def evaluate_sigma(xpi, xrho, sigma, splits_pi, splits_rho):
-    psicon = lambda d: 0.5*d*d + d
+    psicon = lambda d: 0.5*d*d #+ d
     
     obj = 0
     
